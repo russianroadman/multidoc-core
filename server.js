@@ -1,8 +1,12 @@
 const express = require('express')
 const bp = require('body-parser')
+const cors = require('cors')
+
 const jp = bp.json()
 const app = express()
 const port = 8080
+
+app.use(cors({credentials: true, origin: true}))
 
 app.get('/', (req, res) => {
     res.send('Hello World!')
