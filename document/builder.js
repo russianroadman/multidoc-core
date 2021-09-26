@@ -3,7 +3,7 @@ const {Document, Block, Version, Content} = require('../models/multidoc')
 
 module.exports = function load(uuid) {
 
-	db
+	return db
 		.sync()
 		.then(() => {
 			return Document.findByPk(uuid, {

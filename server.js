@@ -49,7 +49,7 @@ load('e010c1ce-ed25-4344-8ea2-1369c229ae32')
 app.use(cors({credentials: true, origin: true}))
 
 app.get('/get', (req, res) => {
-    res.send('Hello World!')
+    load('e010c1ce-ed25-4344-8ea2-1369c229ae32').then(r => res.send(r))
 })
 
 app.post('/post', jp, (req,res) => {
