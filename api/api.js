@@ -1,7 +1,9 @@
 const express = require('express')
+const bp = require('body-parser')
 const cors = require('cors')
-const load = require("./document/builder");
+const load = require("../document/builder")
 
+const jp = bp.json()
 const api = express()
 
 api.use(cors({credentials: true, origin: true}))
@@ -51,6 +53,4 @@ api.post('/post', jp, (req,res) => {
 	res.sendStatus(200)
 });
 
-api.listen(port, () => {
-	console.log(`Example app listening at http://localhost:${port}`)
-})
+module.exports = api

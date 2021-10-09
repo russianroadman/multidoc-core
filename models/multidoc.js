@@ -3,8 +3,8 @@ const db = require('../database/database')
 
 const Content = db.define('content', {
     id: {
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
         allowNull: false,
         primaryKey: true
     },
@@ -16,8 +16,8 @@ const Content = db.define('content', {
 
 const Version = db.define('version', {
     id: {
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
         allowNull: false,
         primaryKey: true
     },
@@ -33,8 +33,8 @@ const Version = db.define('version', {
 
 const Block = db.define('block', {
     id: {
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
         allowNull: false,
         primaryKey: true
     },
