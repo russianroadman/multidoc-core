@@ -1,7 +1,7 @@
 const express = require('express')
 const bp = require('body-parser')
 const cors = require('cors')
-const {load, create, findDocumentByContent} = require('../document/builder')
+const x = require('../document/builder')
 
 const jp = bp.json()
 const api = express()
@@ -9,51 +9,55 @@ const api = express()
 api.use(cors({credentials: true, origin: true}))
 
 api.get('/test/:id/', (req, res) => {
-	load(req.params.id).then(r => res.send(r))
+	x.load(req.params.id).then(r => res.send(r))
 })
 
 /* update document */
 api.post('/update', jp, (req,res) => {
-	load(req.body.documentId).then(r => res.send(r))
+	x.load(req.body.documentId).then(r => res.send(r))
 });
 
 /* force update document */
 api.post('/force-update', jp, (req,res) => {
-	load(req.body.documentId).then(r => res.send(r))
+	x.load(req.body.documentId).then(r => res.send(r))
 });
 
 /* create document */
 api.post('/create', jp, (req,res) => {
-	create(req.body.documentTitle, req.body.blockTitle, req.body.versionTitle).then(
+	x.create(req.body.documentTitle, req.body.blockTitle, req.body.versionTitle).then(
 		r => {
-			findDocumentByContent(r.id).then(docId => console.log('promise find: ', res.send(docId)));
+			x.findDocumentByContent(r.id).then(docId => console.log('promise find: ', res.send(docId)));
 		}
 	)
 });
 
 /* delete document */
 api.post('/delete', jp, (req,res) => {
-
+	x.deleteDocument(req.body.documentId).then(() => res.sendStatus(200))
 });
 
 /* save document title */
 api.post('/save-document-title', jp, (req,res) => {
-
+	x.setDocumentTitle(req.body.documentId, req.body.documentTitle).then(() => res.sendStatus(200))
 });
 
 /* save block title */
 api.post('/save-block-title', jp, (req,res) => {
-
+	x.setBlockTitle(req.body.blockId, req.body.blockTitle).then(() => res.sendStatus(200))
 });
 
 /* save version title */
 api.post('/save-version-title', jp, (req,res) => {
-
+	x.setVersionTitle(req.body.versionId, req.body.versionTitle).then(() => res.sendStatus(200))
 });
 
 /* add block */
 api.post('/add-block', jp, (req,res) => {
-
+	x.addBlock(
+		req.body.documentId,
+		req.body.blockTitle,
+		req.body.versionTitle
+	).then(() => res.sendStatus(200))
 });
 
 /* delete block */

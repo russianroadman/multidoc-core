@@ -73,5 +73,85 @@ module.exports = {
 
 	},
 
+	deleteDocument: function deleteDocument(uuid) {
+
+		return db
+			.sync()
+			.then(() => {
+				Document.destroy({
+					where: { id : uuid }
+				})
+			})
+
+	},
+
+	setDocumentTitle: function setDocumentTitle(uuid, title){
+
+		return db
+			.sync()
+			.then(() => {
+				Document.update(
+					{ title: title },
+					{ where: { id : uuid } }
+				)
+			})
+
+	},
+
+	setBlockTitle: function setBlockTitle(uuid, title){
+
+		return db
+			.sync()
+			.then(() => {
+				Block.update(
+					{ title: title },
+					{ where: { id : uuid } }
+				)
+			})
+
+	},
+
+	setVersionTitle: function setVersionTitle(uuid, title){
+
+		return db
+			.sync()
+			.then(() => {
+				Version.update(
+					{ title: title },
+					{ where: { id : uuid } }
+				)
+			})
+
+	},
+
+	addBlock: function addBlock(uuid, blockTitle, versionTitle) {
+
+		return db
+			.sync()
+			.then(() => {
+				return Document.findByPk(uuid)
+			})
+			.then(d => {
+				return Block.create({
+					title: blockTitle,
+					documentId: d.id
+				})
+			})
+			.then(b => {
+				return Version.create({
+					title: versionTitle,
+					preferred: true,
+					blockId: b.id
+				})
+			})
+			.then(v => {
+				return Content.create({
+					content: '<p></p>',
+					versionId: v.id
+				})
+			})
+
+	}
+
 }
 
