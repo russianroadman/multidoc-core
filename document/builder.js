@@ -1,9 +1,10 @@
 const db = require('../database/database')
 const {Document, Block, Version, Content} = require('../models/multidoc')
+const {deleteBlock} = require("./builder");
 
 module.exports = {
 
-	load: function load(uuid) {
+	load: function load(uuid){
 
 		return db
 			.sync()
@@ -23,7 +24,7 @@ module.exports = {
 
 	},
 
-	create: function create(documentTitle, blockTitle, versionTitle) {
+	create: function create(documentTitle, blockTitle, versionTitle){
 
 		return db
 			.sync()
@@ -54,7 +55,7 @@ module.exports = {
 
 	},
 
-	findDocumentByContent: function findDocumentByContent(uuid) {
+	findDocumentByContent: function findDocumentByContent(uuid){
 
 		return db
 			.sync()
@@ -73,7 +74,7 @@ module.exports = {
 
 	},
 
-	deleteDocument: function deleteDocument(uuid) {
+	deleteDocument: function deleteDocument(uuid){
 
 		return db
 			.sync()
@@ -124,7 +125,7 @@ module.exports = {
 
 	},
 
-	addBlock: function addBlock(uuid, blockTitle, versionTitle) {
+	addBlock: function addBlock(uuid, blockTitle, versionTitle){
 
 		return db
 			.sync()
@@ -149,6 +150,106 @@ module.exports = {
 					content: '<p></p>',
 					versionId: v.id
 				})
+			})
+
+	},
+
+	deleteBlock: function deleteBlock(uuid){
+
+		return db
+			.sync()
+			.then(() => {
+				Block.destroy({
+					where: { id : uuid }
+				})
+			})
+
+	},
+
+	addVersion: function addVersion(uuid, title){
+
+		// todo prevent multiple preferred versions
+
+		return db
+			.sync()
+			.then(() => {
+				return Block.findByPk(uuid)
+			})
+			.then(b => {
+				return Version.create({
+					title: title,
+					preferred: true,
+					blockId: b.id
+				})
+			})
+			.then(v => {
+				return Content.create({
+					content: '<p></p>',
+					versionId: v.id
+				})
+			})
+
+	},
+
+	deleteVersion: function deleteVersion(uuid) {
+
+		return db
+			.sync()
+			.then(() => {
+				Version.destroy({
+					where: { id : uuid }
+				})
+			})
+
+	},
+
+	isPreferred: function isPreferred(uuid) {
+
+		return db
+			.sync()
+			.then(() => {
+				return Version.findByPk(uuid)
+			})
+			.then(v => {
+				return v.preferred
+			})
+
+	},
+
+	setPreferred: function setPreferred(uuid) {
+
+		// todo prevent multiple preferred versions
+
+		return db
+			.sync()
+			.then(() => {
+				Version.update(
+					{ preferred: true },
+					{ where: { id : uuid } }
+				)
+			})
+
+	},
+
+	getContent: function getContent(uuid) {
+
+		return db
+			.sync()
+			.then(() => {
+				return Content.findByPk(uuid)
+			})
+
+	},
+
+	saveContent: function saveContent(uuid, content) {
+
+		return db
+			.sync()
+			.then(() => {
+				Content.update(
+					{ content: content },
+					{ where: { id : uuid } }
+				)
 			})
 
 	}
