@@ -1,6 +1,5 @@
 const db = require('../database/database')
 const {Document, Block, Version, Content} = require('../models/multidoc')
-const {deleteBlock} = require("./builder");
 
 module.exports = {
 
@@ -26,6 +25,8 @@ module.exports = {
 
 	create: function create(documentTitle, blockTitle, versionTitle){
 
+		let id
+
 		return db
 			.sync()
 			.then(() => {
@@ -34,6 +35,7 @@ module.exports = {
 				})
 			})
 			.then(d => {
+				id = d.id
 				return Block.create({
 					title: blockTitle,
 					documentId: d.id
@@ -47,29 +49,11 @@ module.exports = {
 				})
 			})
 			.then(v => {
-				return Content.create({
+				Content.create({
 					content: '<p></p>',
 					versionId: v.id
 				})
-			})
-
-	},
-
-	findDocumentByContent: function findDocumentByContent(uuid){
-
-		return db
-			.sync()
-			.then(() => {
-				return Content.findByPk(uuid)
-			})
-			.then(c => {
-				return Version.findByPk(c.versionId)
-			})
-			.then(v => {
-				return Block.findByPk(v.blockId)
-			})
-			.then(b => {
-				return b.documentId
+				return id
 			})
 
 	},

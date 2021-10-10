@@ -26,9 +26,7 @@ api.post('/force-update', jp, (req,res) => {
 
 /* create document */
 api.post('/create', jp, (req,res) => {
-	documentService.create(req.body.documentTitle, req.body.blockTitle, req.body.versionTitle).then(r => {
-		documentService.findDocumentByContent(r.id).then(docId => console.log('promise find: ', res.send(docId)));
-	})
+	documentService.create(req.body.documentTitle, req.body.blockTitle, req.body.versionTitle).then(r => res.send(r))
 });
 
 /* delete document */
@@ -53,11 +51,7 @@ api.post('/save-version-title', jp, (req,res) => {
 
 /* add block */
 api.post('/add-block', jp, (req,res) => {
-	documentService.addBlock(
-		req.body.documentId,
-		req.body.blockTitle,
-		req.body.versionTitle
-	).then(() => res.sendStatus(200))
+	documentService.addBlock(req.body.documentId, req.body.blockTitle, req.body.versionTitle).then(() => res.sendStatus(200))
 });
 
 /* delete block */
@@ -67,10 +61,7 @@ api.post('/delete-block', jp, (req,res) => {
 
 /* add version */
 api.post('/add-version', jp, (req,res) => {
-	documentService.addVersion(
-		req.body.blockId,
-		req.body.versionTitle
-	).then(() => res.sendStatus(200))
+	documentService.addVersion(req.body.blockId, req.body.versionTitle).then(() => res.sendStatus(200))
 });
 
 /* delete version */
@@ -95,10 +86,7 @@ api.post('/get-content', jp, (req,res) => {
 
 /* save content */
 api.post('/save-content', jp, (req,res) => {
-	documentService.saveContent(
-		req.body.contentId,
-		req.body.content
-	).then(() => res.sendStatus(200))
+	documentService.saveContent(req.body.contentId, req.body.content).then(() => res.sendStatus(200))
 });
 
 module.exports = api
