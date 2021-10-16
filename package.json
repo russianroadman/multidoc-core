@@ -16,7 +16,9 @@
     "pg": "^8.7.1",
     "postgres": "^1.0.2",
     "sequelize": "^6.6.5",
-    "websocket": "^1.0.34"
+    "uuid": "^8.3.2",
+    "websocket": "^1.0.34",
+    "ws": "^8.2.3"
   },
   "devDependencies": {}
 }
