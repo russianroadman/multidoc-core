@@ -20,10 +20,11 @@ module.exports = {
 					}]
 				})
 			})
+			.catch(e => e)
 
 	},
 
-	create: function create(documentTitle, blockTitle, versionTitle){
+	create: function create(documentTitle, blockTitle, versionTitle, content='<p></p>'){
 
 		let id
 
@@ -50,7 +51,42 @@ module.exports = {
 			})
 			.then(v => {
 				Content.create({
-					content: '<p></p>',
+					content: content,
+					versionId: v.id
+				})
+				return id
+			})
+
+	},
+
+	createExample: function createExample(){
+
+		let id
+
+		return db
+			.sync()
+			.then(() => {
+				return Document.create({
+					title: 'Book of recipes'
+				})
+			})
+			.then(d => {
+				id = d.id
+				return Block.create({
+					title: 'Pizza',
+					documentId: d.id
+				})
+			})
+			.then(b => {
+				return Version.create({
+					title: 'John',
+					preferred: true,
+					blockId: b.id
+				})
+			})
+			.then(v => {
+				Content.create({
+					content: '<ul><li>Preheat oven to 450 degrees F (230 degrees C). In a medium bowl, dissolve yeast and sugar in warm water. Let stand until creamy, about 10 minutes.</li><li>Stir in flour, salt and oil. Beat until smooth. Let rest for 5 minutes.</li><li>Turn dough out onto a lightly floured surface and pat or roll into a round. Transfer crust to a lightly greased pizza pan or baker\'s peel dusted with cornmeal. Spread with desired toppings and bake in preheated oven for 15 to 20 minutes, or until golden brown. Let baked pizza cool for 5 minutes before serving.</li></ul>',
 					versionId: v.id
 				})
 				return id
@@ -152,8 +188,6 @@ module.exports = {
 
 	addVersion: function addVersion(uuid, title){
 
-		// todo prevent multiple preferred versions
-
 		return db
 			.sync()
 			.then(() => {
@@ -162,7 +196,7 @@ module.exports = {
 			.then(b => {
 				return Version.create({
 					title: title,
-					preferred: true,
+					preferred: false,
 					blockId: b.id
 				})
 			})
@@ -180,11 +214,26 @@ module.exports = {
 		return db
 			.sync()
 			.then(() => {
-				Version.destroy({
-					where: { id : uuid }
+				return Version.findByPk(uuid)
+			})
+			.then(v => {
+				return Block.findByPk(v.blockId)
+			})
+			.then(b => {
+				return Version.findAll({
+					where: { blockId : b.id }
 				})
 			})
-
+			.then(vs => {
+				if (vs.length > 1){
+					Version.destroy({
+						where: { id : uuid }
+					})
+					console.log('version ' + uuid + ' was deleted')
+				} else {
+					console.log('version ' + uuid + ' is the only version')
+				}
+			})
 	},
 
 	isPreferred: function isPreferred(uuid) {
@@ -202,11 +251,31 @@ module.exports = {
 
 	setPreferred: function setPreferred(uuid) {
 
-		// todo prevent multiple preferred versions
-
 		return db
 			.sync()
 			.then(() => {
+				return Version.findByPk(uuid)
+			})
+			.then(v => {
+				return Block.findByPk(v.blockId)
+			})
+			.then(b => {
+				return Version.findAll({
+					where: { blockId : b.id }
+				})
+			})
+			.then(vs => {
+				vs.forEach(v => {
+					Version.update(
+						{ preferred: false },
+						{
+							where: {
+								id : v.id,
+								preferred : true
+							}
+						}
+					)
+				})
 				Version.update(
 					{ preferred: true },
 					{ where: { id : uuid } }
@@ -236,6 +305,14 @@ module.exports = {
 				)
 			})
 
+	},
+
+	getPreferredContents: function getPreferredContents(document) {
+		let preferredVersions = []
+		document.blocks.forEach(b => {
+			preferredVersions.push(b.versions.find(v => v.preferred).content.content)
+		})
+		return preferredVersions
 	}
 
 }

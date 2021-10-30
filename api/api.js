@@ -1,7 +1,7 @@
 const express = require('express')
 const bp = require('body-parser')
 const cors = require('cors')
-const documentService = require('../document/builder')
+const documentService = require('../document/document-service')
 
 const jp = bp.json()
 const api = express()
@@ -26,7 +26,15 @@ api.post('/force-update', jp, (req,res) => {
 
 /* create document */
 api.post('/create', jp, (req,res) => {
-	documentService.create(req.body.documentTitle, req.body.blockTitle, req.body.versionTitle).then(r => res.send(r))
+	documentService.create(req.body.documentTitle, req.body.blockTitle, req.body.versionTitle)
+		.then(r => res.send(r))
+		.catch(e => console.log(e))
+});
+
+api.post('/create-example', jp, (req,res) => {
+	documentService.createExample()
+		.then(r => res.send(r))
+		.catch(e => console.log(e))
 });
 
 /* delete document */
@@ -93,6 +101,14 @@ api.post('/save-content', jp, (req,res) => {
 	 *  и текущее сохранение отменяется
 	 */
 	documentService.saveContent(req.body.contentId, req.body.content).then(() => res.sendStatus(200))
+});
+
+api.post('/get-preferred-list', jp, (req,res) => {
+	documentService
+		.load(req.body.documentId)
+		.then(d => {
+			res.send(documentService.getPreferredContents(d))
+		})
 });
 
 module.exports = api

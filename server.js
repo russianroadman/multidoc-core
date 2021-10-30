@@ -17,7 +17,7 @@ ws.on('request', req => {
 	let userID = v4()
 	const connection = req.accept(null, req.origin)
 	clients[userID] = connection
-	console.log('connected: ', userID, ' in ', Object.getOwnPropertyNames(clients))
+	// console.log('connected: ', userID, ' in ', Object.getOwnPropertyNames(clients))
 
 	connection.on('message', msg => {
 
