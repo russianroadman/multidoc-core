@@ -211,6 +211,8 @@ module.exports = {
 
 	deleteVersion: function deleteVersion(uuid) {
 
+		// todo if preferred was deleted then first becomes preferred
+
 		return db
 			.sync()
 			.then(() => {
