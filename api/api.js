@@ -24,6 +24,10 @@ api.post('/force-update', jp, (req,res) => {
 	documentService.load(req.body.documentId).then(r => res.send(r))
 });
 
+api.post('/get-document-title', jp, (req,res) => {
+	documentService.getDocumentTitle(req.body.documentId).then(r => res.send(r.title))
+});
+
 /* create document */
 api.post('/create', jp, (req,res) => {
 	documentService.create(req.body.documentTitle, req.body.blockTitle, req.body.versionTitle)

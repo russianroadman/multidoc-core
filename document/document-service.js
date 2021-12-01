@@ -315,6 +315,17 @@ module.exports = {
 			preferredVersions.push(b.versions.find(v => v.preferred).content.content)
 		})
 		return preferredVersions
+	},
+
+	getDocumentTitle: function geoDocumentTitle(uuid) {
+
+		return db
+			.sync()
+			.then(() => {
+				return Document.findByPk(uuid)
+			})
+			.catch(e => e)
+
 	}
 
 }

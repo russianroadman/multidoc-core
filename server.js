@@ -1,8 +1,7 @@
 const api = require('./api/api')
 const Ws = require('websocket').server
 const http = require('http')
-const { v4: v4 } = require('uuid');
-const {use} = require("express/lib/router");
+const {v4} = require("uuid");
 
 const port = 8080
 const server = http.createServer(api);
@@ -11,34 +10,67 @@ server.listen(port, () => console.log(`core is running at http://localhost:${por
 const ws = new Ws({
 	httpServer: server
 })
-const clients = {}
 const documents = {}
+const clients = {}
 
 ws.on('request', req => {
 
-	let userID = v4()
+	const userID = v4()
 	const connection = req.accept(null, req.origin)
 	clients[userID] = connection
-	console.log('connected: ', userID)
 
 	connection.on('message', msg => {
 
 		if (msg.type === 'utf8'){
-			let m = JSON.parse(msg.utf8Data).msg
-			if (m.type === 'connection'){
-				if (documents[m.payload] === undefined){
-					documents[m.payload] = [userID]
-				} else {
-					documents[m.payload] = [ ...documents[m.payload], userID]
-				}
-				console.log(documents)
+
+			const m = JSON.parse(msg.utf8Data).msg
+			const dId = m.payload.documentId
+
+			switch (m.type) {
+				case 'connection':
+					connect(dId, userID)
+					break;
+				case 'action':
+					action(dId, m)
+					break;
 			}
-			for (let key in clients){
-				// clients[key].sendUTF(msg.utf8Data)
-				// console.log('sent message "' + JSON.parse(msg.utf8Data).msg + '" to: ', key)
-			}
+
 		}
 
 	})
 
 })
+
+ws.on('disconnect', () => {
+	console.log('disconnected')
+})
+
+
+const connect = (dId, userID) => {
+	if (documents[dId] === undefined) {
+		documents[dId] = [userID]
+	} else {
+		documents[dId].push(userID)
+	}
+	for (let id in documents){
+		console.log(id, ':', documents[id].length)
+	}
+}
+
+const action = (dId, m) => {
+	let specificClients = documents[dId]
+	for (let c in specificClients) {
+		clients[specificClients[c]].sendUTF(JSON.stringify({
+			payload: m.payload
+		}))
+	}
+}
+
+const send = (userID, body) => {
+	if (ping(userID)) clients[userID].sendUTF(body)
+	else clients[userID].delete()
+}
+
+const ping = (userID) => {
+	return clients[userID].sendUTF('ping')
+}
