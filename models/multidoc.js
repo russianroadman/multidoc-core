@@ -29,7 +29,7 @@ const Version = db.define('version', {
         type: Sequelize.BOOLEAN,
         allowNullL: false
     }
-}, { timestamps: false })
+})
 
 const Block = db.define('block', {
     id: {
@@ -42,7 +42,7 @@ const Block = db.define('block', {
         type: Sequelize.STRING,
         allowNull: false
     }
-}, { timestamps: false })
+})
 
 const Document = db.define('document', {
     id: {

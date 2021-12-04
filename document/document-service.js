@@ -20,6 +20,13 @@ module.exports = {
 					}]
 				})
 			})
+			.then(d => {
+				d.blocks.sort((a, b) => (a.createdAt > b.createdAt) ? 1 : -1)
+				d.blocks.forEach(b => {
+					b.versions.sort((a, b) => (a.createdAt > b.createdAt) ? 1 : -1)
+				})
+				return d
+			})
 			.catch(e => e)
 
 	},

@@ -5,6 +5,7 @@ const {v4} = require("uuid");
 
 const port = 8080
 const server = http.createServer(api);
+
 server.listen(port, () => console.log(`core is running at http://localhost:${port}`))
 
 const ws = new Ws({
@@ -52,9 +53,6 @@ const connect = (dId, userID) => {
 	} else {
 		documents[dId].push(userID)
 	}
-	for (let id in documents){
-		console.log(id, ':', documents[id].length)
-	}
 }
 
 const action = (dId, m) => {
@@ -66,11 +64,11 @@ const action = (dId, m) => {
 	}
 }
 
-const send = (userID, body) => {
-	if (ping(userID)) clients[userID].sendUTF(body)
-	else clients[userID].delete()
-}
-
-const ping = (userID) => {
-	return clients[userID].sendUTF('ping')
-}
+// const send = (userID, body) => {
+// 	if (ping(userID)) clients[userID].sendUTF(body)
+// 	else clients[userID].delete()
+// }
+//
+// const ping = (userID) => {
+// 	return clients[userID].sendUTF('ping')
+// }
