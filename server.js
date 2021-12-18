@@ -4,7 +4,8 @@ const http = require('http')
 const {v4} = require("uuid");
 // const db = require("./database/database");
 
-const port = 8080
+//const port = 8080
+const port = process.env.PORT
 const server = http.createServer(api);
 
 // db.sync({force:true})
