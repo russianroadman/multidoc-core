@@ -2,12 +2,12 @@ const api = require('./api/api')
 const Ws = require('websocket').server
 const http = require('http')
 const {v4} = require("uuid");
-const db = require("./database/database");
+// const db = require("./database/database");
 
 const port = 8080
 const server = http.createServer(api);
 
-db.sync({force:true})
+// db.sync({force:true})
 
 server.listen(port, () => console.log(`core is running at http://localhost:${port}`))
 
